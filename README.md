@@ -1,2 +1,2 @@
 # heathland
-This repository contains the source code of R package heathland
+This repository contains the source code of the R package heathland
