@@ -6,9 +6,9 @@
 nutribal(data, management, freq=NULL, time=NULL, n)
 }
 \arguments{
-  \item{data}{A nutrient object created by \code{\link{importnutri}}.}
+  \item{data}{A nutrients object created by \code{\link{import_nutrients}}.}
   \item{management}{A character string specifying the management practice. Can be either \dQuote{none} (no management), \dQuote{grazing}, \dQuote{mowing}, \dQuote{burning}, \dQuote{choppering}, or \dQuote{sodcutting}.}
-  \item{freq}{The management frequency (years).}
+  \item{freq}{The time interval between two management practices (years).}
   \item{time}{The time period until leaching rates reach status quo ante (years).}
   \item{n}{The number of years to simulate.}
 }
@@ -22,7 +22,7 @@ By default, \code{freq=1} and \code{time=1} for grazing.
 \author{Benjamin M. Delory
 }
 \examples{
-data<-importnutri()
+data<-import_nutrients()
 
 none<-nutribal(data, management="none", n=30)
 grazing<-nutribal(data, management="grazing", n=30)

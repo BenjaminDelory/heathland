@@ -2,7 +2,7 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
   
   #Error interceptions
   if (is.list(data)==FALSE){stop("data must be a list containing model parameters")}
-  if ("nutrient" %in% class(data)){} else {stop("data must be a nutrient object")}
+  if ("nutrients" %in% class(data)){} else {stop("data must be a nutrients object")}
   if (is.character(management)==FALSE){stop("management must be character")}
   if (management=="grazing"|management=="mowing"|management=="burning"|management=="choppering"|management=="sodcutting"|management=="none"){} else {stop("Unknown management")}
   if (is.null(freq)==FALSE){if (is.numeric(freq)==TRUE & length(freq)==1){} else {stop("freq must be a single numeric value")}}
@@ -23,7 +23,7 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
     balance.allyears<-matrix(balance, ncol=5, nrow=n, byrow=T)
     results<-apply(balance.allyears, 2, cumsum)
     colnames(results)<-c("N", "P", "K", "Ca", "Mg")
-    results<-data.frame(Year=c(1:n), as.data.frame(results))}
+    results<-data.frame(year=c(1:n), as.data.frame(results))}
   
   if (management=="grazing"){
     
@@ -38,7 +38,7 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
     balance.allyears<-matrix(balance, ncol=5, nrow=n, byrow=T)
     results<-apply(balance.allyears, 2, cumsum)
     colnames(results)<-c("N", "P", "K", "Ca", "Mg")
-    results<-data.frame(Year=c(1:n), as.data.frame(results))}
+    results<-data.frame(year=c(1:n), as.data.frame(results))}
   
   
   if (management=="mowing"){
@@ -83,7 +83,7 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
     balance.allyears<-(matrix(data$mowing["Datm",], ncol=5, nrow=n, byrow=T)+matrix(data$mowing["Esheep",], ncol=5, nrow=n, byrow=T)-matrix(data$mowing["Lcontrol",], ncol=5, nrow=n, byrow=T))-(R+Lincrease-matrix(data$mowing["Dash",], ncol=5, nrow=n, byrow=T))
     results<-apply(balance.allyears, 2, cumsum)
     colnames(results)<-c("N", "P", "K", "Ca", "Mg")
-    results<-data.frame(Year=c(1:n), as.data.frame(results))}
+    results<-data.frame(year=c(1:n), as.data.frame(results))}
   
   
   if (management=="burning"){
@@ -132,7 +132,7 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
     balance.allyears<-(matrix(data$burning["Datm",], ncol=5, nrow=n, byrow=T)+matrix(data$burning["Esheep",], ncol=5, nrow=n, byrow=T)-matrix(data$burning["Lcontrol",], ncol=5, nrow=n, byrow=T))-(R+Lincrease-Dash)
     results<-apply(balance.allyears, 2, cumsum)
     colnames(results)<-c("N", "P", "K", "Ca", "Mg")
-    results<-data.frame(Year=c(1:n), as.data.frame(results))}
+    results<-data.frame(year=c(1:n), as.data.frame(results))}
   
 
   if (management=="choppering"){
@@ -177,7 +177,7 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
     balance.allyears<-(matrix(data$choppering["Datm",], ncol=5, nrow=n, byrow=T)+matrix(data$choppering["Esheep",], ncol=5, nrow=n, byrow=T)-matrix(data$choppering["Lcontrol",], ncol=5, nrow=n, byrow=T))-(R+Lincrease-matrix(data$choppering["Dash",], ncol=5, nrow=n, byrow=T))
     results<-apply(balance.allyears, 2, cumsum)
     colnames(results)<-c("N", "P", "K", "Ca", "Mg")
-    results<-data.frame(Year=c(1:n), as.data.frame(results))}
+    results<-data.frame(year=c(1:n), as.data.frame(results))}
   
   
   if (management=="sodcutting"){
@@ -222,6 +222,6 @@ nutribal<-function(data, management, freq=NULL, time=NULL, n){
     balance.allyears<-(matrix(data$sodcutting["Datm",], ncol=5, nrow=n, byrow=T)+matrix(data$sodcutting["Esheep",], ncol=5, nrow=n, byrow=T)-matrix(data$sodcutting["Lcontrol",], ncol=5, nrow=n, byrow=T))-(R+Lincrease-matrix(data$sodcutting["Dash",], ncol=5, nrow=n, byrow=T))
     results<-apply(balance.allyears, 2, cumsum)
     colnames(results)<-c("N", "P", "K", "Ca", "Mg")
-    results<-data.frame(Year=c(1:n), as.data.frame(results))}
+    results<-data.frame(year=c(1:n), as.data.frame(results))}
   
   return(results)}

@@ -1,4 +1,4 @@
-importnutri<-function(path=NULL){
+import_nutrients<-function(path=NULL){
   
   #Error interceptions
   if (is.null(path)==FALSE & is.character(path)==FALSE){stop("If path is not NULL, it must be a character string")}
@@ -13,6 +13,6 @@ importnutri<-function(path=NULL){
              choppering=as.matrix(read.table(paste(path, "choppering.txt", sep="/"))), 
              sodcutting=as.matrix(read.table(paste(path, "sodcutting.txt", sep="/"))))
   
-  class(data)<-c("list", "nutrient")
+  class(data)<-c("list", "nutrients")
   
   return(data)}
