@@ -1,7 +1,7 @@
 \name{import_nutrients}
 \alias{import_nutrients}
-\title{Import Nutrient Data in a List}
-\description{This function creates a list with the data needed for the computation of nutrient balances for each management practice.}
+\title{Import Nutrient Data}
+\description{This function creates a list with the data needed for the computation of nutrient balances for each management scenario.}
 \usage{
 import_nutrients(path=NULL)
 }
@@ -15,17 +15,15 @@ To run \code{import_nutrients} efficiently, nutrient input and output data must 
 
 \bold{Datm}: the annual atmospheric deposition (kg/ha/year).
 
-\bold{Esheep}: the annual input of nutrient via sheep excrement (kg/ha/year).
+\bold{Esheep}: the annual nutrient input via sheep excrement (kg/ha/year).
 
-\bold{Lcontrol}: the annual amount of nutrients leached from the control plots (kg/ha/year).
+\bold{Lcontrol}: the annual amount of nutrient leached from the control plots (kg/ha/year).
 
-\bold{R}: the loss of nutrient due to the removal of biomass and soil (kg/ha).
+\bold{R}: the nutrient loss due to the removal of biomass and soil (kg/ha).
 
 \bold{Lfirst}: the amount of nutrient leached from the managed plots one year after the management took place (kg/ha/year).
 
-\bold{Dash}: the deposition of nutrient coming from ash production (kg/ha/year).
-}
-\references{
+\bold{Dash}: the nutrient deposition coming from ash production (kg/ha/year).
 }
 \author{Benjamin M. Delory
 }

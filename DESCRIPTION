@@ -2,9 +2,10 @@ Package: heathland
 Type: Package
 Title: Analysis of Heathland Management Trade-offs
 Version: 1.0
-Date: 2018-06-14
-Author: David Walmsley, Isabel Alonso, Benjamin M Delory, Werner Haerdtle 
+Date: 2018-08-24
+Author: Benjamin M Delory, David Walmsley, Isabel Alonso, Werner Haerdtle 
 Maintainer: Benjamin M Delory <Benjamin.Delory@leuphana.de>
 Description: Analysing trade-offs associated with the management of a dry atlantic heath.
 License: GPL-2
+Imports: bigmemory, biganalytics, compiler
 BugReports: https://github.com/BenjaminDelory/heathland/issues
