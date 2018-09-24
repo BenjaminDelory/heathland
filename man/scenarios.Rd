@@ -12,7 +12,7 @@ scenarios(management=c("grazing", "mowing", "burning", "choppering", "sodcutting
   \item{constraints}{A \code{constraints} object created by \code{\link{import_constraints}}.}
   \item{n}{The number of years to simulate.}
   \item{show.progress}{A logical value. If TRUE, a progress bar is shown.}
-  \item{filename}{The name of the text file to export the results (with the extension: .txt).
+  \item{filename}{The name of the text file to export the results (with the extension: .txt).}
   \item{filter}{A positive numeric value giving the time period (in years) separating two filtering events (see details). Default to zero (meaning that no filtering is performed).}
 }
 \details{
