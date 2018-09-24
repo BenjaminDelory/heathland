@@ -1,5 +1,6 @@
 scenarios<-cmpfun(function(management=c("grazing", "mowing", "burning", "choppering", "sodcutting"), 
-                    constraints=import_constraints(), n=20, show.progress=TRUE, filename=NULL){
+                    constraints=import_constraints(), n=20, show.progress=TRUE, filename=NULL,
+                    filter=0){
   
   if (is.matrix(constraints)==FALSE){stop("constraints must be a matrix containing model parameters")}
   if ("constraints" %in% class(constraints)){} else {stop("constraints must be a constraints object")}
@@ -8,7 +9,8 @@ scenarios<-cmpfun(function(management=c("grazing", "mowing", "burning", "chopper
   if (is.numeric(n)==TRUE & length(n)==1 & n>0){} else {stop("n must be a single positive numeric value")}
   if (mode(show.progress)!="logical"){stop("show.progress must be logical")}
   if (is.null(filename)==FALSE & is.character(filename)==FALSE){stop("filename must be a character string")}
-
+  if (is.numeric(filter)==TRUE & length(filter)==1 & filter>=0){} else {stop("filter must be a single numeric value superior or equal to zero (zero means no filtering)")}
+  
   #Create possible scenarios to test
   #0 is no management
   #1 is grazing
@@ -189,7 +191,28 @@ scenarios<-cmpfun(function(management=c("grazing", "mowing", "burning", "chopper
     mpermute(scenarios, order=c(index, c(1:l)[-index]))
     scenarios<-sub.big.matrix(scenarios, firstRow=1+lengthindex, lastRow=l,
                               firstCol=1, lastCol=n)
-    l<-l-lengthindex}}
+    l<-l-lengthindex}
+    
+    #Filtering scenarios based on management frequency
+    
+    if (filter>0){
+      
+      if (i<n & is.whole(i/filter)==TRUE){#Do filtering
+      
+        freq<-as.data.frame(t(apply(scenarios[,1:i], 1, freq_sc)))
+        duplicate<-which(duplicated(freq[,])==FALSE)
+        scenarios<-as.big.matrix(scenarios[duplicate,])
+        l<-nrow(scenarios)} #remove duplicates
+      
+      else{
+        if (i==n){
+          
+          freq<-as.data.frame(t(apply(scenarios, 1, freq_sc)))
+          duplicate<-which(duplicated(freq[,])==FALSE)
+          scenarios<-as.big.matrix(scenarios[duplicate,])
+          l<-nrow(scenarios)}}}} #Remove duplicates
+  
+  #Export results
   
   if (is.null(filename)==FALSE){write.big.matrix(scenarios, filename=filename, row.names=F, col.names=F, sep=",")}
   
