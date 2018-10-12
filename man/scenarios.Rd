@@ -26,4 +26,4 @@ For each possible management frequency distribution, the function computes one r
 #Compute management scenarios
 #Number of simulated years: 50
 #Do not export the results as a text file
-sc<-scenarios(management=c("none", grazing", "mowing", "burning"), n=50)}
+sc<-scenarios(management=c("none", "grazing", "mowing", "burning"), n=50)}
