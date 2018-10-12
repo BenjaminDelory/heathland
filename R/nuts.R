@@ -1,5 +1,5 @@
 nuts<-cmpfun(function(scenarios, data=import_nutrients(), constraints=import_constraints(), 
-                      sqa=list(grazing=1, mowing=5, burning=5, choppering=10, sodcutting=15),
+                      sqa=list(grazing=1, mowing=5, burning=5, choppering=7),
                       nutrient="N", init=0){
   
   #Error interceptions

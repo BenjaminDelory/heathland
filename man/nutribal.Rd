@@ -4,7 +4,7 @@
 \description{This function computes the cumulative balance of one essential nutrient for one management scenario.}
 \usage{
 nutribal(x, data=import_nutrients(), 
-         sqa=list(grazing=1, mowing=5, burning=5, choppering=10, sodcutting=15), 
+         sqa=list(grazing=1, mowing=5, burning=5, choppering=7), 
          nutrient="N", init=0)
 }
 \arguments{
@@ -15,7 +15,7 @@ nutribal(x, data=import_nutrients(),
   \item{init}{The nutrient balance at the start of the simulation. Default to zero.}
 }
 \details{
-A management scenario should be given as a numeric vector. The following convention is used: 0 for no management, 1 for grazing, 2 for mowing, 3 for burning, 4 for choppering, and 5 for sodcutting. The vector should have a length equal to the number of simulated years (1 management per year).
+A management scenario should be given as a numeric vector. The following convention is used: 0 for no management, 1 for grazing, 2 for mowing, 3 for burning, and 4 for choppering. The vector should have a length equal to the number of simulated years (1 management per year).
 }
 \value{Returns a numeric vector reporting the cumulative nutrient balance.
 }

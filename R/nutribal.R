@@ -1,4 +1,4 @@
-nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing=5, burning=5, choppering=10, sodcutting=15), 
+nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing=5, burning=5, choppering=7), 
                           nutrient="N", init=0){
   
   #x is a vector for a possible management scenario
@@ -34,11 +34,13 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
     if (x[i]==4){
       datanutri<-data$choppering[,nutrient]
       management<-"choppering"}
-    if (x[i]==5){
-      datanutri<-data$sodcutting[,nutrient]
-      management<-"sodcutting"}
     
     #Calculate nutrient balance
+    
+    if (sum(x)==0){balance<-datanutri1["Datm"]-datanutri1["Lcontrol"]}
+    
+    else{
+    
     if (x[i]>0) {
       t<-1
       balance<-(datanutri["Datm"]+datanutri["Esheep"])-(datanutri["R"]+datanutri["Lfirst"]-datanutri["Dash"])}
@@ -46,7 +48,7 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
     if (x[i]==0){
       t<-t+1
       if (t<sqa[[management]]){L<-(t*(datanutri["Lcontrol"]-datanutri["Lfirst"])/(sqa[[management]]-1))+((sqa[[management]]*datanutri["Lfirst"]-datanutri["Lcontrol"])/(sqa[[management]]-1))} else {L<-datanutri["Lcontrol"]}
-      balance<-(datanutri1["Datm"]+datanutri1["Esheep"])-(datanutri1["R"]+L-datanutri1["Dash"])}
+      balance<-(datanutri1["Datm"]+datanutri1["Esheep"])-(datanutri1["R"]+L-datanutri1["Dash"])}}
     
     results[i+1]<-balance}
   
