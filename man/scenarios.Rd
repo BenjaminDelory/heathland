@@ -3,7 +3,7 @@
 \title{Compute Management Scenarios}
 \description{This function computes all possible management scenarios based on management frequency distributions and existing constraints.}
 \usage{
-scenarios(management=c("none", grazing", "mowing", "burning", "choppering"), 
+scenarios(management=c("none", "grazing", "mowing", "burning", "choppering"), 
           constraints=import_constraints(), n=100, filename=NULL)}
 \arguments{
   \item{management}{A character vector listing the allowed management practices.}
