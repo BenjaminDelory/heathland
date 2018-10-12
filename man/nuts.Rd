@@ -25,12 +25,12 @@ The following convention is used: 0 for no management, 1 for grazing, 2 for mowi
 \seealso{\code{\link{import_nutrients}}, \code{\link{import_constraints}}, \code{\link{scenarios}}, \code{\link{import_scenarios}}.}
 \examples{
 #Create management scenarios
-sc<-scenarios(management=c("none", grazing", "mowing", "burning", "choppering"), n=50)
+sc<-scenarios(management=c("none", "grazing", "mowing", "burning", "choppering"), n=50)
 
 #Compute the N balance for each scenario
 balance<-nuts(sc)
 
-#Plot results for the last year
+#Plot the results
 boxplot(balance[,ncol(balance)], ylab="Cumulative N balance (kg/ha)", las=1)
 abline(h=0, lty=2)
 }
