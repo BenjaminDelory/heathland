@@ -1,28 +1,28 @@
 \name{nuts}
 \alias{nuts}
-\title{Compute the Nutrient Balance of Management Scenarios}
-\description{This function computes the cumulative balance of one essential nutrient for many possible management scenarios.}
+\title{Compute the Nutrient Balance and Ecosystem Services of Management Scenarios}
+\description{This function computes the cumulative balance of one essential nutrient (N, P, K, Mg, or Ca) or one ecosystem service (groundwater recharge, groundwater quality, carbon removal, cost, or appreciation) for many possible management scenarios.}
 \usage{
-nuts(scenarios, data=import_nutrients(), constraints=import_constraints(), 
+nuts(scenarios, data=import_nutrients(), 
      sqa=list(grazing=1, mowing=5, burning=5, choppering=7),
-     nutrient="N", init=0)
+     nutrient="N", service="waterquality", init=0)
 }
 \arguments{
   \item{scenarios}{A \code{big.matrix} object created by \code{\link{scenarios}} or \code{\link{import_scenarios}}.}
-  \item{data}{A \code{nutrients} object created by \code{\link{import_nutrients}}.}
-  \item{constraints}{A \code{constraints} object created by \code{\link{import_constraints}}.}
+  \item{data}{A \code{nutrients} object created by \code{\link{import_nutrients}} or a \code{services} object created by \code{\link{import_services}}.}
   \item{sqa}{A list giving the time period until leaching rates reach status quo ante (years) for each management.}
-  \item{nutrient}{The nutrient to focus on. Could be either \code{\dQuote{N}}, \code{\dQuote{P}}, \code{\dQuote{K}}, \code{\dQuote{Mg}}, or \code{\dQuote{Ca}}.}
-  \item{init}{The nutrient balance at the start of the simulation. Default to zero.}
+  \item{nutrient}{The nutrient to focus on. Only used if data is a nutrients object. Could be either \code{\dQuote{N}}, \code{\dQuote{P}}, \code{\dQuote{K}}, \code{\dQuote{Mg}}, or \code{\dQuote{Ca}}.}
+  \item{service}{The ecosystem service to focus on. Only used if data is a services object. Could be either \code{\dQuote{waterrecharge}}, \code{\dQuote{waterquality}}, \code{\dQuote{carbon}}, \code{\dQuote{cost}}, or \code{\dQuote{appreciation}}.}
+  \item{init}{The nutrient/groundwater recharge/groundwater quality balance at the start of the simulation. Default to zero.}
 }
 \details{
 The following convention is used: 0 for no management, 1 for grazing, 2 for mowing, 3 for burning, and 4 for choppering.
 }
-\value{Returns a \code{big.matrix} object containing the cumulative nutrient balance for each scenario (row) each year (column).
+\value{Returns a \code{big.matrix} object containing the cumulative nutrient or ecosystem service balance for each scenario (row) each year (column). Values are given in kg/ha for the nutrient balance, mm/year for groundwater recharge, kg N/ha for groundwater quality, kg/ha for carbon removal, and euros/ha for cost. Appreciation is adimensional.
 }
 \author{Benjamin M. Delory
 }
-\seealso{\code{\link{import_nutrients}}, \code{\link{import_constraints}}, \code{\link{scenarios}}, \code{\link{import_scenarios}}.}
+\seealso{\code{\link{import_nutrients}}, \code{\link{import_services}}, \code{\link{scenarios}}, \code{\link{import_scenarios}}.}
 \examples{
 #Create management scenarios
 sc<-scenarios(management=c("none", "grazing", "mowing", "burning", "choppering"), n=50)

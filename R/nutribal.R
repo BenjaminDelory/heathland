@@ -8,7 +8,25 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
   if (is.list(sqa)==FALSE){stop("sqa must be a list")}
   if (nutrient=="N"|nutrient=="P"|nutrient=="K"|nutrient=="Ca"|nutrient=="Mg"){} else {stop("nutrient must be either N, P, K, Ca, or Mg")}
   if (is.numeric(init)==TRUE & length(init)==1 & init>=0) {} else {stop("init must be a single positive numeric value")}
-
+  
+  #Check scenario
+  index<-which(x>0)
+  
+  for (i in 1:index[length(index)-1]){
+    
+    if (x[i]==1 & sqa[["grazing"]]>1){
+      if (identical(x[(i+1):(i+sqa[["grazing"]]-1)],rep(0, sqa[["grazing"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for grazing = ", sqa[["grazing"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+    
+    if (x[i]==2 & sqa[["mowing"]]>1){
+      if (identical(x[(i+1):(i+sqa[["mowing"]]-1)],rep(0, sqa[["mowing"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for mowing = ", sqa[["mowing"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+    
+    if (x[i]==3 & sqa[["burning"]]>1){
+      if (identical(x[(i+1):(i+sqa[["burning"]]-1)],rep(0, sqa[["burning"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for burning = ", sqa[["burning"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+    
+    if (x[i]==4 & sqa[["choppering"]]>1){
+      if (identical(x[(i+1):(i+sqa[["choppering"]]-1)],rep(0, sqa[["choppering"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for choppering = ", sqa[["choppering"]], "). Management allowed if status quo ante is reached.", sep=""))}}}
+  
+  #Compute nutrient balance
   n<-length(x) #Number of simulated years
   results<-rep(NA, length.out=n+1) #Create vector to store results
   results[1]<-init
@@ -47,7 +65,7 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
     
     if (x[i]==0){
       t<-t+1
-      if (t<sqa[[management]]){L<-(t*(datanutri["Lcontrol"]-datanutri["Lfirst"])/(sqa[[management]]-1))+((sqa[[management]]*datanutri["Lfirst"]-datanutri["Lcontrol"])/(sqa[[management]]-1))} else {L<-datanutri["Lcontrol"]}
+      if (t<sqa[[management]]){L<-(t*(datanutri["Lcontrol"]-datanutri["Lfirst"])/(sqa[[management]]-1))+((sqa[[management]]*datanutri["Lfirst"]-datanutri["Lcontrol"])/(sqa[[management]]-1))} else {L<-datanutri1["Lcontrol"]}
       balance<-(datanutri1["Datm"]+datanutri1["Esheep"])-(datanutri1["R"]+L-datanutri1["Dash"])}}
     
     results[i+1]<-balance}

@@ -1,145 +1,158 @@
-ecoser<-function(data, management, freq=NULL, time=NULL, n){
+ecoser<-cmpfun(function(x, data=import_services(), sqa=list(grazing=1, mowing=5, burning=5, choppering=7),
+                        service="waterrecharge", init=0){
   
-  #Error interceptions
+  #x is a vector for a possible management scenario
+  
   if (is.list(data)==FALSE){stop("data must be a list containing model parameters")}
   if ("services" %in% class(data)){} else {stop("data must be a services object")}
-  if (is.character(management)==FALSE){stop("management must be character")}
-  if (management=="grazing"|management=="mowing"|management=="burning"|management=="choppering"|management=="sodcutting"|management=="none"){} else {stop("Unknown management")}
-  if (is.null(freq)==FALSE){if (is.numeric(freq)==TRUE & length(freq)==1){} else {stop("freq must be a single numeric value")}}
-  if (is.null(time)==FALSE){if (is.numeric(time)==TRUE & length(time)==1){} else {stop("time must be a single numeric value")}}
-  if (is.numeric(n)==TRUE & length(n)==1){} else {stop("n must be a single numeric value")}
+  if (is.list(sqa)==FALSE){stop("sqa must be a list")}
+  if (is.numeric(init)==TRUE & length(init)==1 & init>=0) {} else {stop("init must be a single positive numeric value")}
+  if (service=="waterrecharge"|service=="carbon"|service=="cost"|service=="waterquality"|service=="appreciation"){} else {stop("service must be either waterrecharge, waterquality, carbon, cost, or appreciation")}
   
-  if (management=="mowing"|management=="burning"|management=="choppering"|management=="sodcutting") {
-    if (is.null(freq)==TRUE){stop("management frequency must be provided")}
-    if (is.null(time)==TRUE){stop("time needed to reach status quo ante after management must be provided")}}
+  #Check scenario
+  index<-which(x>0)
   
-  if (management=="grazing"){
-    #We assume that there is no difference between control and managed plots
-    results<-as.matrix(data.frame(year=c(1:n), groundwater=rep(0, n)))}
-  
-  if (management!="grazing"){
+  for (i in 1:index[length(index)-1]){
     
-    if (freq<time){stop("management frequency is lower than the time needed to reach status quo ante after management")}
-  
-    yearsaftermanagement<-seq(from=0, to=n, by=freq)+1 #Find all first years after management
-    if (length(which(yearsaftermanagement>n))>0) {yearsaftermanagement<-yearsaftermanagement[-which(yearsaftermanagement>n)]}
-  
-    L<-matrix(ncol=1, nrow=n)} #Store groundwater recharge for each year
-  
-  if (management=="mowing"){
-
-    Ltot<-matrix(ncol=1, nrow=time) #Total leaching until status quo ante
-    for (i in 1:time) {Ltot[i,]<--((data$groundwater["managed","mowing"]-data$groundwater["control","mowing"])/(time-1))*i+((time*data$groundwater["managed","mowing"]-data$groundwater["control","mowing"])/(time-1))}
+    if (x[i]==1 & sqa[["grazing"]]>1){
+      if (identical(x[(i+1):(i+sqa[["grazing"]]-1)],rep(0, sqa[["grazing"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for grazing = ", sqa[["grazing"]], "). Management allowed if status quo ante is reached.", sep=""))}}
     
-    t<-0 #Initialisation
+    if (x[i]==2 & sqa[["mowing"]]>1){
+      if (identical(x[(i+1):(i+sqa[["mowing"]]-1)],rep(0, sqa[["mowing"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for mowing = ", sqa[["mowing"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+    
+    if (x[i]==3 & sqa[["burning"]]>1){
+      if (identical(x[(i+1):(i+sqa[["burning"]]-1)],rep(0, sqa[["burning"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for burning = ", sqa[["burning"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+    
+    if (x[i]==4 & sqa[["choppering"]]>1){
+      if (identical(x[(i+1):(i+sqa[["choppering"]]-1)],rep(0, sqa[["choppering"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for choppering = ", sqa[["choppering"]], "). Management allowed if status quo ante is reached.", sep=""))}}}
+  
+  #Compute ecosystem services
+  n<-length(x) #Number of simulated years
+  
+  if (service=="waterrecharge"){
+    
+    results<-rep(NA, length.out=n+1) #Create vector to store results
+    results[1]<-init
+  
+      for (i in 1:n){
+        
+        #Store waterrecharge recharge data for a particular management
+        
+        if (x[i]==0){dataser1<-mean(data$waterrecharge["control",])}
+        if (x[i]==1){
+          dataser<-rep(mean(data$waterrecharge["control",]), 2)
+          management<-"grazing"}
+        if (x[i]==2){
+          dataser<-data$waterrecharge[,"mowing"]
+          management<-"mowing"}
+        if (x[i]==3){
+          dataser<-data$waterrecharge[,"burning"]
+          management<-"burning"}
+        if (x[i]==4){
+          dataser<-data$waterrecharge[,"choppering"]
+          management<-"choppering"}
+        
+        #Calculate waterrecharge recharge
+        
+        if (sum(x)==0){recharge<-dataser1}
+        
+        else{
+        
+        if (x[i]>0) {
+          t<-1
+          recharge<-dataser[2]}
+        
+        if (x[i]==0){
+          t<-t+1
+          if (t<sqa[[management]]){recharge<-(t*(dataser[1]-dataser[2])/(sqa[[management]]-1))+((sqa[[management]]*dataser[2]-dataser[1])/(sqa[[management]]-1))} else {recharge<-dataser1}}}
+        
+        results[i+1]<-recharge}}
+  
+  if (service=="carbon"){
+    
+    results<-rep(NA, length.out=n)
     
     for (i in 1:n){
-    
-      if (i==1){
-        t<-t+1
-        L[i,]<-Ltot[t,]}
-        
-      else {
-        
-        if (i %in% yearsaftermanagement) {
-          t<-1
-          L[i,]<-Ltot[t,]}
-        
-        else {
-          t<-t+1
-          if (t<=time) {L[i,]<-Ltot[t,]}
-          if (t>time) {L[i,]<-data$groundwater["control","mowing"]}}}}
-    
-    results.control<-cumsum(matrix(data$groundwater["control", "mowing"], ncol=1, nrow=n))
-    results.managed<-cumsum(L)
-    results<-results.managed-results.control
-    results<-data.frame(year=c(1:n), groundwater=results)}
+      if (x[i]==1){management<-"grazing"}
+      if (x[i]==2){management<-"mowing"}
+      if (x[i]==3){management<-"burning"}
+      if (x[i]==4){management<-"choppering"}
+      if (x[i]>0) {results[i]<-data$carbon[1,management]} else {results[i]<-0}}}
   
-  if (management=="burning"){
+  if (service=="cost"){
     
-    Ltot<-matrix(ncol=1, nrow=time) #Total leaching until status quo ante
-    for (i in 1:time) {Ltot[i,]<--((data$groundwater["managed","burning"]-data$groundwater["control","burning"])/(time-1))*i+((time*data$groundwater["managed","burning"]-data$groundwater["control","burning"])/(time-1))}
-    
-    t<-0 #Initialisation
+    results<-rep(NA, length.out=n)
     
     for (i in 1:n){
-      
-      if (i==1){
-        t<-t+1
-        L[i,]<-Ltot[t,]}
-      
-      else {
-        
-        if (i %in% yearsaftermanagement) {
-          t<-1
-          L[i,]<-Ltot[t,]}
-        
-        else {
-          t<-t+1
-          if (t<=time) {L[i,]<-Ltot[t,]}
-          if (t>time) {L[i,]<-data$groundwater["control","burning"]}}}}
-    
-    results.control<-cumsum(matrix(data$groundwater["control", "burning"], ncol=1, nrow=n))
-    results.managed<-cumsum(L)
-    results<-results.managed-results.control
-    results<-data.frame(year=c(1:n), groundwater=results)}
+      if (x[i]==1){management<-"grazing"}
+      if (x[i]==2){management<-"mowing"}
+      if (x[i]==3){management<-"burning"}
+      if (x[i]==4){management<-"choppering"}
+      if (x[i]>0) {results[i]<-data$costs[1,management]} else {results[i]<-0}}}
   
-  if (management=="choppering"){
+  if (service=="waterquality"){
     
-    Ltot<-matrix(ncol=1, nrow=time) #Total leaching until status quo ante
-    for (i in 1:time) {Ltot[i,]<--((data$groundwater["managed","choppering"]-data$groundwater["control","choppering"])/(time-1))*i+((time*data$groundwater["managed","choppering"]-data$groundwater["control","choppering"])/(time-1))}
-    
-    t<-0 #Initialisation
-    
-    for (i in 1:n){
-      
-      if (i==1){
-        t<-t+1
-        L[i,]<-Ltot[t,]}
-      
-      else {
-        
-        if (i %in% yearsaftermanagement) {
-          t<-1
-          L[i,]<-Ltot[t,]}
-        
-        else {
-          t<-t+1
-          if (t<=time) {L[i,]<-Ltot[t,]}
-          if (t>time) {L[i,]<-data$groundwater["control","choppering"]}}}}
-    
-    results.control<-cumsum(matrix(data$groundwater["control", "choppering"], ncol=1, nrow=n))
-    results.managed<-cumsum(L)
-    results<-results.managed-results.control
-    results<-data.frame(year=c(1:n), groundwater=results)}
-  
-  if (management=="sodcutting"){
-    
-    Ltot<-matrix(ncol=1, nrow=time) #Total leaching until status quo ante
-    for (i in 1:time) {Ltot[i,]<--((data$groundwater["managed","sodcutting"]-data$groundwater["control","sodcutting"])/(time-1))*i+((time*data$groundwater["managed","sodcutting"]-data$groundwater["control","sodcutting"])/(time-1))}
-    
-    t<-0 #Initialisation
+    results<-rep(NA, length.out=n+1) #Create vector to store results
+    results[1]<-init
     
     for (i in 1:n){
       
-      if (i==1){
-        t<-t+1
-        L[i,]<-Ltot[t,]}
+      #Store waterrecharge quality data for a particular management
       
-      else {
+      if (x[i]==0){dataser1<-mean(data$waterquality["Lcontrol",])}
+      if (x[i]==1){
+        dataser<-data$waterquality[,"grazing"]
+        management<-"grazing"}
+      if (x[i]==2){
+        dataser<-data$waterquality[,"mowing"]
+        management<-"mowing"}
+      if (x[i]==3){
+        dataser<-data$waterquality[,"burning"]
+        management<-"burning"}
+      if (x[i]==4){
+        dataser<-data$waterquality[,"choppering"]
+        management<-"choppering"}
+      
+      #Calculate waterrecharge quality
+      
+      if (sum(x)==0){quality<-dataser1}
+      
+      else{
         
-        if (i %in% yearsaftermanagement) {
+        if (x[i]>0) {
           t<-1
-          L[i,]<-Ltot[t,]}
+          quality<-dataser[2]}
         
-        else {
+        if (x[i]==0){
           t<-t+1
-          if (t<=time) {L[i,]<-Ltot[t,]}
-          if (t>time) {L[i,]<-data$groundwater["control","sodcutting"]}}}}
-    
-    results.control<-cumsum(matrix(data$groundwater["control", "sodcutting"], ncol=1, nrow=n))
-    results.managed<-cumsum(L)
-    results<-results.managed-results.control
-    results<-data.frame(year=c(1:n), groundwater=results)}
+          if (t<sqa[[management]]){quality<-(t*(dataser[1]-dataser[2])/(sqa[[management]]-1))+((sqa[[management]]*dataser[2]-dataser[1])/(sqa[[management]]-1))} else {quality<-dataser1}}}
+      
+      results[i+1]<-quality}}
   
-  return(results)}
+  if (service=="appreciation"){
+    
+    results<-rep(NA, length.out=n)
+    
+    for (i in 1:n){
+      
+      if (sum(x)==0){appreciation<-2}
+      
+      else{
+        
+        if (x[i]>0){
+          if (x[i]==1){management<-"grazing"}
+          if (x[i]==2){management<-"mowing"}
+          if (x[i]==3){management<-"burning"}
+          if (x[i]==4){management<-"choppering"}
+          t<-1
+          appreciation<-data$appreciation[t,management]}
+        
+        if (x[i]==0){
+          t<-t+1
+          if (t<=5){appreciation<-data$appreciation[t,management]} else {appreciation<-2}}}
+      
+      results[i]<-appreciation}}
+  
+  results<-cumsum(results) #Show cumulative results
+  
+  return(results)})

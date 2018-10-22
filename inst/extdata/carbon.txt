@@ -1,0 +1,2 @@
+"grazing"	"mowing"	"burning"	"choppering"	"sodcutting"
+"C"	1111	4201.1	4522.3	26219.2	44917.3

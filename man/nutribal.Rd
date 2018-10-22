@@ -17,7 +17,7 @@ nutribal(x, data=import_nutrients(),
 \details{
 A management scenario should be given as a numeric vector. The following convention is used: 0 for no management, 1 for grazing, 2 for mowing, 3 for burning, and 4 for choppering. The vector should have a length equal to the number of simulated years (1 management per year).
 }
-\value{Returns a numeric vector reporting the cumulative nutrient balance.
+\value{Returns a numeric vector reporting the cumulative nutrient balance (kg/ha).
 }
 \author{Benjamin M. Delory
 }

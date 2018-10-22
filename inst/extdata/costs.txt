@@ -1,0 +1,2 @@
+"grazing"	"mowing"	"burning"	"choppering"	"sodcutting"
+"cost"	210	50	360	3350	6000

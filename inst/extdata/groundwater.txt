@@ -1,3 +1,0 @@
-"mowing"	"burning"	"choppering"	"sodcutting"
-"control"	579	776	662	538
-"managed"	793	1044	1010	1008

@@ -1,0 +1,6 @@
+"grazing"	"mowing"	"burning"	"choppering"	"sodcutting"
+"Year1"	2	3	4	4	4
+"Year2"	2	2.5	3	3	3.5
+"Year3"	2	2	2	2	3
+"Year4"	2	2	2	2	2.5
+"Year5"	2	2	2	2	2
