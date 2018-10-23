@@ -11,7 +11,7 @@ is.whole<-function(x){is.numeric(x) && floor(x)==x}
 
 resample <- function(x, ...) {x[sample.int(length(x), ...)]}
 
-create.scenario<-function(x, constraints, try=100){
+create.scenario<-function(x, constraints, try){
   success<-FALSE
   t<-0
   while(success==FALSE){
