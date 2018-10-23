@@ -7,5 +7,5 @@ Author: Benjamin M Delory, David Walmsley, Isabel Alonso, Werner Haerdtle
 Maintainer: Benjamin M Delory <Benjamin.Delory@leuphana.de>
 Description: Analysing trade-offs associated with the management of a dry atlantic heath.
 License: GPL-2
-Imports: bigmemory, biganalytics, compiler, partitions, combinat
+Imports: bigmemory, biganalytics, compiler, partitions, combinat, mgcv
 BugReports: https://github.com/BenjaminDelory/heathland/issues
