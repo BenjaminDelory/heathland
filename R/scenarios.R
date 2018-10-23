@@ -22,13 +22,18 @@ scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning", 
                            c("none", "grazing", "mowing", "burning", "choppering")]
   
   #Create all management frequency distributions
-  C <- t(restrictedparts(n, m, include.zero=TRUE))
-  colnames(C)<-management
+  C1 <- t(restrictedparts(n, m, include.zero=TRUE))
+  perm<-permn(management)
+  C<-vector("list", length(perm))
   allmanagement<-c("none","grazing", "mowing", "burning", "choppering")
-  if (m<5){
-    C<-cbind(C, matrix(0, ncol=5-m, nrow=nrow(C)))
-    colnames(C)[(m+1):5]<-allmanagement[-match(management, allmanagement)]}
-  C<-C[,c("none", "grazing", "mowing", "burning", "choppering")] #Order matrix
+  for (i in 1:length(perm)){
+    C[[i]]<-C1
+    colnames(C[[i]])<-perm[[i]]
+    if (m<5){
+      C[[i]]<-cbind(C[[i]], matrix(0, ncol=5-m, nrow=nrow(C[[i]])))
+      colnames(C[[i]])[(m+1):5]<-allmanagement[-match(management, allmanagement)]}
+    C[[i]]<-C[[i]][,c("none", "grazing", "mowing", "burning", "choppering")]}
+  C<-do.call(rbind, C)
   
   #First filter: for each management, remove combinations for which the frequency is too high based on existing constraints
   for (i in 1:m){
