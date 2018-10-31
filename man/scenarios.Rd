@@ -4,13 +4,12 @@
 \description{This function computes all possible management scenarios based on management frequency distributions and existing constraints.}
 \usage{
 scenarios(management=c("none", "grazing", "mowing", "burning", "choppering"), 
-          constraints=import_constraints(), n=100, filename=NULL, try=100)}
+          constraints=import_constraints(), n=100, filename=NULL)}
 \arguments{
   \item{management}{A character vector listing the allowed management practices.}
   \item{constraints}{A \code{constraints} object created by \code{\link{import_constraints}}.}
   \item{n}{The number of years to simulate.}
-  \item{filename}{The name of the text file to export the results (with the extension: .txt).}
-  \item{try}{A positive numeric value. The number of trials to generate a management scenario based on a given management frequency distribution.}}
+  \item{filename}{The name of the text file to export the results (with the extension: .txt).}}
 
 \details{
 If filename is not \code{NULL}, the function will export a text file containing the computed scenarios. The text file will be stored in the working directory. This function uses the \code{\link{write.big.matrix}} function of the \code{bigmemory} package to create the text file.

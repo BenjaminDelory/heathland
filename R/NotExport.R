@@ -11,30 +11,58 @@ is.whole<-function(x){is.numeric(x) && floor(x)==x}
 
 resample <- function(x, ...) {x[sample.int(length(x), ...)]}
 
-create.scenario<-function(x, constraints, try){
-  success<-FALSE
-  t<-0
-  while(success==FALSE){
-    t<-t+1
-    sc<-c(rep(0, x[1]),rep(1, x[2]),rep(2, x[3]),rep(3, x[4]),rep(4, x[5]))
-    sc1<-sc[sc>0]
-    if (length(sc1)==0){
-      scenario<-sc
-      success<-TRUE}
-    else{
-      l0<-length(sc1)
-      scenario<-c()
-      for (i in 1:l0){
-        if (length(sc1)>1) {m<-resample(sc1, 1)} else {m<-sc1[1]}
-        if (4 %in% scenario & m==4) {if ((length(scenario)+constraints[scenario[length(scenario)]+1,m+1])-which(scenario==4)[sum(scenario==4)]<constraints["choppering", "choppering"]){
-          if (length(sc1[sc1!=4])==0){scenario<-NA}
-          if (length(sc1[sc1!=4])>0){
-            m<-resample(sc1[sc1!=4], 1)}}} 
-        sc1<-sc1[-which(sc1==m)[1]]
-        if (i==1) {scenario<-c(scenario,m)}
-        if (FALSE %in% is.na(scenario) & i>1) {scenario<-c(scenario, c(rep(0, constraints[scenario[length(scenario)]+1,m+1]-1), m))}}
-      if (FALSE %in% is.na(scenario) & length(scenario)<=sum(x)){success<-TRUE}}
-    if (t>try){break}}
-  if (t>try){scenario<-rep(NA, sum(x))}
-  scenario<-c(scenario, rep(0,sum(x)-length(scenario)))
+create.scenario<-function(x, constraints){
+
+      scenario<-rep(0, sum(x))
+      
+      if (x[5]>0){ #if there is choppering
+      
+          pos.choppering<-seq(from=0, by=constraints["choppering","mowing"]+constraints["mowing","choppering"]+constraints["mowing","mowing"], length.out=x[5])+1
+          scenario[pos.choppering]<-4
+          
+          if (x[3]+x[4]!=0){
+            
+              pos.mow.burn1<-pos.choppering-constraints["mowing", "choppering"]
+              pos.mow.burn1<-pos.mow.burn1[pos.mow.burn1>0]
+              pos.mow.burn2<-pos.choppering+constraints["choppering", "mowing"]
+              pos.mow.burn2<-pos.mow.burn2[pos.mow.burn2<sum(x)]
+              pos.mow.burn.rest<-seq(max(pos.mow.burn2)+constraints["mowing","mowing"], to=sum(x), by=constraints["mowing","mowing"])
+              pos.mow.burn<-sort(c(pos.mow.burn1, pos.mow.burn2, pos.mow.burn.rest))
+              if (x[3]+x[4]<=length(pos.mow.burn)){
+                index<-pos.mow.burn[1:(x[3]+x[4])]
+                if (x[3]+x[4]>1) {scenario[index]<-sample(c(rep(2, x[3]), rep(3, x[4])))}
+                if (x[3]+x[4]==1) {scenario[index]<-c(rep(2, x[3]), rep(3, x[4]))}} 
+              else {scenario<-rep(NA, sum(x))}}
+              
+          if (FALSE %in% is.na(scenario)){
+          
+              t<-x[2] #Number of grazing
+              for (i in 1:length(scenario)){
+                
+                if (scenario[i]!=0){
+                  pos.m<-i
+                  m<-scenario[i]}
+                
+                if (scenario[i]==0 & i-pos.m>=constraints[m+1,"grazing"]){
+                  scenario[i]<-1
+                  t<-t-1}
+                
+                if (t==0){break}}}}
+      
+      else{ #if there is no choppering
+        
+        sc1<-c(rep(1, x[2]),rep(2, x[3]),rep(3, x[4]),rep(4, x[5]))
+        l0<-length(sc1)
+        if (l0!=0){
+          scenario<-c()
+          for (i in 1:l0){
+            m<-resample(sc1, 1)
+            sc1<-sc1[-which(sc1==m)[1]]
+            if (i==1) {scenario<-c(scenario,m)} else {scenario<-c(scenario, c(rep(0, constraints[scenario[length(scenario)]+1,m+1]-1), m))}}
+          scenario<-c(scenario, rep(0,sum(x)-length(scenario)))}}
+      
+      #Check if valid scenario
+      
+      if (identical(as.vector(x), freq_sc(scenario))==FALSE){scenario<-rep(NA, sum(x))}
+  
   return(scenario)}
