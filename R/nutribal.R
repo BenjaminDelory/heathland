@@ -12,6 +12,8 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
   #Check scenario
   index<-which(x>0)
   
+  if (length(index)>1){
+  
   for (i in 1:index[length(index)-1]){
     
     if (x[i]==1 & sqa[["grazing"]]>1){
@@ -24,7 +26,7 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
       if (identical(x[(i+1):(i+sqa[["burning"]]-1)],rep(0, sqa[["burning"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for burning = ", sqa[["burning"]], "). Management allowed if status quo ante is reached.", sep=""))}}
     
     if (x[i]==4 & sqa[["choppering"]]>1){
-      if (identical(x[(i+1):(i+sqa[["choppering"]]-1)],rep(0, sqa[["choppering"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for choppering = ", sqa[["choppering"]], "). Management allowed if status quo ante is reached.", sep=""))}}}
+      if (identical(x[(i+1):(i+sqa[["choppering"]]-1)],rep(0, sqa[["choppering"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for choppering = ", sqa[["choppering"]], "). Management allowed if status quo ante is reached.", sep=""))}}}}
   
   #Compute nutrient balance
   n<-length(x) #Number of simulated years

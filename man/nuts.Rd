@@ -5,7 +5,7 @@
 \usage{
 nuts(scenarios, data=import_nutrients(), 
      sqa=list(grazing=1, mowing=5, burning=5, choppering=7),
-     nutrient="N", service="waterquality", init=0)
+     nutrient="N", service="waterrecharge", init=0)
 }
 \arguments{
   \item{scenarios}{A \code{big.matrix} object created by \code{\link{scenarios}} or \code{\link{import_scenarios}}.}
