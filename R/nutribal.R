@@ -19,7 +19,7 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
   if (x[1]!=4){stop("A scenario must start with choppering")}
   
   #Set model parameters
-  #path<-system.file("extdata", package="heathland")
+  path<-system.file("extdata", package="heathland")
   nutrientcontent<-as.data.frame(read.table(paste(path, "nutrientcontent.txt", sep="/"), header=TRUE))
   
   if (nutrient=="N"){model<-lm(N/100~Year, nutrientcontent)} #Fit linear model
