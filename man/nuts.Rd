@@ -13,7 +13,7 @@ nuts(scenarios, data=import_nutrients(),
   \item{sqa}{A list giving the time period until leaching rates reach status quo ante (years) for each management.}
   \item{nutrient}{The nutrient to focus on. Only used if data is a nutrients object. Could be either \code{\dQuote{N}}, \code{\dQuote{P}}, \code{\dQuote{K}}, \code{\dQuote{Mg}}, or \code{\dQuote{Ca}}.}
   \item{service}{The ecosystem service to focus on. Only used if data is a services object. Could be either \code{\dQuote{waterrecharge}}, \code{\dQuote{waterquality}}, \code{\dQuote{carbon}}, \code{\dQuote{cost}}, or \code{\dQuote{appreciation}}.}
-  \item{init}{The nutrient/groundwater recharge/groundwater quality balance at the start of the simulation. Default to zero.}
+  \item{init}{The groundwater recharge/groundwater quality balance at the start of the simulation. Default to zero.}
 }
 \details{
 The following convention is used: 0 for no management, 1 for grazing, 2 for mowing, 3 for burning, and 4 for choppering.
@@ -25,7 +25,7 @@ The following convention is used: 0 for no management, 1 for grazing, 2 for mowi
 \seealso{\code{\link{import_nutrients}}, \code{\link{import_services}}, \code{\link{scenarios}}, \code{\link{import_scenarios}}.}
 \examples{
 #Create management scenarios
-sc<-scenarios(management=c("none", "grazing", "mowing", "burning", "choppering"), n=50)
+sc<-scenarios(management=c("none", "grazing", "mowing", "burning"), n=15)
 
 #Compute the N balance for each scenario
 balance<-nuts(sc)

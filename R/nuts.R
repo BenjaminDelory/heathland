@@ -1,5 +1,5 @@
 nuts<-cmpfun(function(scenarios, data=import_nutrients(), sqa=list(grazing=1, mowing=5, burning=5, choppering=7),
-                      nutrient="N", service="waterrecharge", init=0){
+                      nutrient="N", service="waterrecharge", init=0, ...){
   
   #Error interceptions
   if (is.big.matrix(scenarios)==FALSE){stop("scenarios must be a big.matrix containing possible scenarios")}
@@ -10,7 +10,12 @@ nuts<-cmpfun(function(scenarios, data=import_nutrients(), sqa=list(grazing=1, mo
   if ("services" %in% class(data)) {if (service=="waterrecharge"|service=="carbon"|service=="cost"|service=="waterquality"|service=="appreciation"){} else {stop("service must be either waterrecharge, waterquality, carbon, cost, or appreciation")}}
   if (is.numeric(init)==TRUE & length(init)==1 & init>=0) {} else {stop("init must be a single positive numeric value")}
   
-  if ("nutrients" %in% class(data)) {results<-as.big.matrix(t(apply(scenarios, 1, nutribal, data=data, sqa=sqa, nutrient=nutrient, init=init)))}
-  if ("services" %in% class(data)) {results<-as.big.matrix(t(apply(scenarios, 1, ecoser, data=data, sqa=sqa, service=service, init=init)))}
+  message(paste("Total number of scenarios: ", nrow(scenarios), sep=""))
+  
+  if ("nutrients" %in% class(data)) {
+    results<-as.big.matrix(t(apply(scenarios, 1, nutribal, data=data, sqa=sqa, nutrient=nutrient, ...)))
+    message(paste("Total number of problematic scenarios: ", length(mwhich(x=results, cols=1, vals=NA, "eq")), sep=""))}
+  
+  if ("services" %in% class(data)) {results<-as.big.matrix(t(apply(scenarios, 1, ecoser, data=data, sqa=sqa, service=service, init=init, ...)))}
   
   return(results)})

@@ -2,6 +2,3 @@ export(import_nutrients, import_services, import_constraints, import_scenarios, 
 importFrom(bigmemory, big.matrix, as.big.matrix, is.big.matrix, mpermute, mwhich, sub.big.matrix, write.big.matrix, read.big.matrix)
 importFrom(biganalytics, apply)
 importFrom(compiler, cmpfun)
-importFrom(partitions, restrictedparts)
-importFrom(combinat, permn)
-importFrom(mgcv, uniquecombs)

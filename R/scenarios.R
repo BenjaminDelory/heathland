@@ -1,11 +1,12 @@
-scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning", "choppering"), 
-                    constraints=import_constraints(), n=100, filename=NULL){
+scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning"), 
+                    constraints=import_constraints(), n=20, show.progress=TRUE, filename=NULL){
   
   if (is.matrix(constraints)==FALSE){stop("constraints must be a matrix containing model parameters")}
   if ("constraints" %in% class(constraints)){} else {stop("constraints must be a constraints object")}
   if (is.character(management)==FALSE){stop("management must be character")}
-  for (i in 1:length(management)){if (management[i]=="grazing"|management[i]=="mowing"|management[i]=="burning"|management[i]=="choppering"|management[i]=="none") {} else {stop("Unknown management")}}
+  for (i in 1:length(management)){if (management[i]=="none"|management[i]=="grazing"|management[i]=="mowing"|management[i]=="burning") {} else {stop("Unknown management")}}
   if (is.numeric(n)==TRUE & length(n)==1 & n>0){} else {stop("n must be a single positive numeric value")}
+  if (mode(show.progress)!="logical"){stop("show.progress must be logical")}
   if (is.null(filename)==FALSE & is.character(filename)==FALSE){stop("filename must be a character string")}
 
   #Create possible scenarios to test
@@ -14,45 +15,201 @@ scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning", 
   #2 is mowing
   #3 is burning
   #4 is choppering
-
+  
   m<-length(management)
   
-  #Order constraints
-  constraints<-constraints[c("none", "grazing", "mowing", "burning", "choppering"),
-                           c("none", "grazing", "mowing", "burning", "choppering")]
+  if (show.progress==TRUE) {pb<-txtProgressBar(min=2, max=n, style=3)}
   
-  #Create all management frequency distributions
-  C1 <- t(restrictedparts(n, m, include.zero=TRUE))
-  perm<-permn(management)
-  C<-vector("list", length(perm))
-  allmanagement<-c("none","grazing", "mowing", "burning", "choppering")
-  for (i in 1:length(perm)){
-    C[[i]]<-C1
-    colnames(C[[i]])<-perm[[i]]
-    if (m<5){
-      C[[i]]<-cbind(C[[i]], matrix(0, ncol=5-m, nrow=nrow(C[[i]])))
-      colnames(C[[i]])[(m+1):5]<-allmanagement[-match(management, allmanagement)]}
-    C[[i]]<-C[[i]][,c("none", "grazing", "mowing", "burning", "choppering")]}
-  C<-uniquecombs(do.call(rbind, C)) #Remove duplicated lines
+  options(bigmemory.typecast.warning=FALSE) #Remove warnings
   
-  #First filter: for each management, remove combinations for which the frequency is too high based on existing constraints
+  #Create big.matrix object
+  scenarios<-big.matrix(nrow=m, ncol=n, type="char", shared=TRUE)
+  
+  if ("none" %in% management) {
+    none<-matrix(ncol=max(constraints["none", management]), nrow=m)
+    colnone<-ncol(none)
+    no<-0} else {no<-NULL}
+  if ("grazing" %in% management) {
+    grazing<-matrix(ncol=max(constraints["grazing", management]), nrow=m)
+    colgrazing<-ncol(grazing)
+    graz<-1} else {graz<-NULL}
+  if ("mowing" %in% management) {
+    mowing<-matrix(ncol=max(constraints["mowing", management]), nrow=m)
+    colmowing<-ncol(mowing)
+    mow<-2} else {mow<-NULL}
+  if ("burning" %in% management) {
+    burning<-matrix(ncol=max(constraints["burning", management]), nrow=m)
+    colburning<-ncol(burning)
+    burn<-3} else {burn<-NULL}
+  
+  #Fill matrices for each management
   for (i in 1:m){
-    index<-which(C[,i]>floor((n-1)/constraints[management[i], management[i]])+1)
-    if (length(index)>0) {C<-C[-index,]}}
+    
+    if ("none" %in% management) {
+      if(management[i]=="none"){none[i,]<-no}
+      if(management[i]=="grazing"){none[i,constraints["none",management[i]]]<-graz}
+      if(management[i]=="mowing"){none[i,constraints["none",management[i]]]<-mow}
+      if(management[i]=="burning"){none[i,constraints["none",management[i]]]<-burn}
+      if (ncol(none)>1) {none[i,1:(constraints["none",management[i]]-1)]<-0}}
+    
+    if ("grazing" %in% management) {
+      if(management[i]=="none"){grazing[i,]<-no}
+      if(management[i]=="grazing"){grazing[i,constraints["grazing",management[i]]]<-graz}
+      if(management[i]=="mowing"){grazing[i,constraints["grazing",management[i]]]<-mow}
+      if(management[i]=="burning"){grazing[i,constraints["grazing",management[i]]]<-burn}
+      if (ncol(grazing)>1) {grazing[i,1:(constraints["grazing",management[i]]-1)]<-0}}
+    
+    if ("mowing" %in% management) {
+      if(management[i]=="none"){mowing[i,]<-no}
+      if(management[i]=="grazing"){mowing[i,constraints["mowing",management[i]]]<-graz}
+      if(management[i]=="mowing"){mowing[i,constraints["mowing",management[i]]]<-mow}
+      if(management[i]=="burning"){mowing[i,constraints["mowing",management[i]]]<-burn}
+      if (ncol(mowing)>1) {mowing[i,1:(constraints["mowing",management[i]]-1)]<-0}}
+    
+    if ("burning" %in% management) {
+      if(management[i]=="none"){burning[i,]<-no}
+      if(management[i]=="grazing"){burning[i,constraints["burning",management[i]]]<-graz}
+      if(management[i]=="mowing"){burning[i,constraints["burning",management[i]]]<-mow}
+      if(management[i]=="burning"){burning[i,constraints["burning",management[i]]]<-burn}
+      if (ncol(burning)>1) {burning[i,1:(constraints["burning",management[i]]-1)]<-0}}}
   
-  #Second filter
-  C<-C[-which(apply(C, 1, function(x){x[2]*min(constraints["grazing", 2:5])+x[3]*min(constraints["mowing", 2:5])+x[4]*min(constraints["burning", 2:5])+x[5]*min(constraints["choppering", 2:5])})>n),]
+  begin<-matrix(nrow=m, ncol=max(constraints["choppering", c("grazing", "mowing", "burning")])+1)
+  begin[,1]<-4
+  for (i in 1:m){
+    if (management[i]=="none") {
+      begin[i,(constraints["choppering","none"]+1):(min(constraints["choppering", c("grazing", "mowing", "burning")])+1)]<-no
+      if (constraints["choppering","none"]>1) {begin[i,2:constraints["choppering","none"]]<-0}}
+    if (management[i]=="grazing") {
+      begin[i,constraints["choppering","grazing"]+1]<-graz
+      if (constraints["choppering","grazing"]>1) {begin[i,2:constraints["choppering","grazing"]]<-0}}
+    if (management[i]=="mowing") {
+      begin[i,constraints["choppering","mowing"]+1]<-mow
+      if (constraints["choppering","mowing"]) {begin[i,2:constraints["choppering","mowing"]]<-0}}
+    if (management[i]=="burning") {
+      begin[i,constraints["choppering","burning"]+1]<-burn
+      if (constraints["choppering","burning"]>1) {begin[i,2:constraints["choppering","burning"]]<-0}}}
   
-  #Create one potential scenario for each frequency distribution
-  scenarios<-as.big.matrix(t(apply(C, 1, create.scenario, constraints=constraints)))
-  
-  #Remove lines with NA values. These are unprobable scenarios.
-  index<-mwhich(scenarios, cols=1, vals=NA, comps="eq")
-  if (length(index)!=0) {scenarios<-as.big.matrix(scenarios[-mwhich(scenarios, cols=1, vals=NA, comps="eq"),])}
+  scenarios[,1:ncol(begin)]<-begin 
+  l<-nrow(scenarios)
+
+  for (i in 2:n){#For each simulated year
+    
+    if (show.progress==TRUE) {setTxtProgressBar(pb, i)}
+    
+    index<-mwhich(x=scenarios, cols=i, vals=NA, "eq")
+    lengthindex<-length(index)
+    
+    if (lengthindex==0){}
+    
+    else{
+    
+    scenarios1<-big.matrix(nrow=l+lengthindex*m, ncol=n, type="char", shared=TRUE)
+    scenarios1[1:l,1:n]<-scenarios[1:l,1:n]
+    scenarios<-scenarios1
+    remove(scenarios1)
+    
+    newscenarios<-matrix(nrow=lengthindex*m, ncol=n)
+    newl<-0
+     
+    for (j in 1:lengthindex){
+      
+      if (scenarios[index[j],i-1]==0) {
+        if (n-(i-1)-colnone>0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  none,
+                                                  matrix(NA, ncol=n-(i-1)-colnone, nrow=m))}
+        if (n-(i-1)-colnone==0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  none)}
+        if (n-(i-1)-colnone<0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  none[,1:(n-(i-1))])}
+        newl<-newl+m}
+      
+      if (scenarios[index[j],i-1]==1) {
+        if (n-(i-1)-colgrazing>0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  grazing,
+                                                  matrix(NA, ncol=n-(i-1)-colgrazing, nrow=m))}
+        if (n-(i-1)-colgrazing==0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  grazing)}
+        if (n-(i-1)-colgrazing<0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                         grazing[,1:(n-(i-1))])}
+        newl<-newl+m}
+      
+      if (scenarios[index[j],i-1]==2) {
+        if (n-(i-1)-colmowing>0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  mowing,
+                                                  matrix(NA, ncol=n-(i-1)-colmowing, nrow=m))}
+        if (n-(i-1)-colmowing==0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  mowing)}
+        if (n-(i-1)-colmowing<0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  mowing[,1:(n-(i-1))])}
+        newl<-newl+m}
+      
+      if (scenarios[index[j],i-1]==3) {
+        if (n-(i-1)-colburning>0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  burning,
+                                                  matrix(NA, ncol=n-(i-1)-colburning, nrow=m))}
+        if (n-(i-1)-colburning==0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  burning)}
+        if (n-(i-1)-colburning<0){
+          newscenarios[(newl+1):(newl+m),]<-cbind(matrix(scenarios[index[j],1:(i-1)], nrow=m, ncol=i-1, byrow=TRUE),
+                                                  burning[,1:(n-(i-1))])}
+        newl<-newl+m}
+      
+    }
+    
+    scenarios[(l+1):(l+nrow(newscenarios)), 1:n]<-newscenarios
+    l<-l+nrow(newscenarios)
+    
+    mpermute(scenarios, order=c(index, c(1:l)[-index]))
+    scenarios<-sub.big.matrix(scenarios, firstRow=1+lengthindex, lastRow=l,
+                              firstCol=1, lastCol=n)
+    
+    l<-l-lengthindex
+    
+    if (i<constraints["choppering", "grazing"]+1){
+      index<-mwhich(x=scenarios, cols=i, vals=1, "eq")
+      lengthindex<-length(index)
+      
+      if (lengthindex>0){
+        mpermute(scenarios, order=c(index, c(1:l)[-index]))
+        scenarios<-sub.big.matrix(scenarios, firstRow=1+lengthindex, lastRow=l,
+                                firstCol=1, lastCol=n)
+        l<-l-lengthindex}}
+    
+    if (i<constraints["choppering", "mowing"]+1){
+      index<-mwhich(x=scenarios, cols=i, vals=2, "eq")
+      lengthindex<-length(index)
+      
+      if (lengthindex>0){
+        mpermute(scenarios, order=c(index, c(1:l)[-index]))
+        scenarios<-sub.big.matrix(scenarios, firstRow=1+lengthindex, lastRow=l,
+                                  firstCol=1, lastCol=n)
+        l<-l-lengthindex}}
+    
+    if (i<constraints["choppering", "burning"]+1){
+      index<-mwhich(x=scenarios, cols=i, vals=3, "eq")
+      lengthindex<-length(index)
+      
+      if (lengthindex>0){
+        mpermute(scenarios, order=c(index, c(1:l)[-index]))
+        scenarios<-sub.big.matrix(scenarios, firstRow=1+lengthindex, lastRow=l,
+                                  firstCol=1, lastCol=n)
+        l<-l-lengthindex}}}}
   
   #Export results
+  
   if (is.null(filename)==FALSE){write.big.matrix(scenarios, filename=filename, row.names=F, col.names=F, sep=",")}
   
-  message(paste("Total number of scenarios: ", nrow(scenarios), sep=""))
+  message(paste("Total number of possible scenarios: ", l, sep=""))
   
   return(scenarios)})

@@ -3,4 +3,4 @@ none	1	1	1	1	1
 grazing	1	1	1	1	1
 mowing	1	5	5	5	8
 burning	1	5	5	5	8
-choppering	1	7	7	7	20
+choppering	1	3	10	10	20
