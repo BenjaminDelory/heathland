@@ -39,13 +39,16 @@ nutribal<-cmpfun(function(x, data=import_nutrients(), sqa=list(grazing=1, mowing
   for (i in 1:index[length(index)-1]){
     
     if (x[i]==1 & sqa[["grazing"]]>1){
-      if (identical(x[(i+1):(i+sqa[["grazing"]]-1)],rep(0, sqa[["grazing"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for grazing = ", sqa[["grazing"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+      if (2 %in% x[(i+1):(i+sqa[["grazing"]]-1)]) {stop("Mowing is not allowed after grazing if status quo ante is not reached.")}
+      if (3 %in% x[(i+1):(i+sqa[["grazing"]]-1)]) {stop("Burning is not allowed after grazing if status quo ante is not reached.")}}
     
     if (x[i]==2 & sqa[["mowing"]]>1){
-      if (identical(x[(i+1):(i+sqa[["mowing"]]-1)],rep(0, sqa[["mowing"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for mowing = ", sqa[["mowing"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+      if (2 %in% x[(i+1):(i+sqa[["mowing"]]-1)]) {stop("Mowing is not allowed after mowing if status quo ante is not reached.")}
+      if (3 %in% x[(i+1):(i+sqa[["mowing"]]-1)]) {stop("Burning is not allowed after mowing if status quo ante is not reached.")}}
     
     if (x[i]==3 & sqa[["burning"]]>1){
-      if (identical(x[(i+1):(i+sqa[["burning"]]-1)],rep(0, sqa[["burning"]]-1))==FALSE){stop(paste("Invalid scenario (sqa for burning = ", sqa[["burning"]], "). Management allowed if status quo ante is reached.", sep=""))}}
+      if (2 %in% x[(i+1):(i+sqa[["burning"]]-1)]) {stop("Mowing is not allowed after burning if status quo ante is not reached.")}
+      if (3 %in% x[(i+1):(i+sqa[["burning"]]-1)]) {stop("Burning is not allowed after burning if status quo ante is not reached.")}}
     
     if (x[i]==4 & sqa[["choppering"]]>1){
       if (2 %in% x[(i+1):(i+sqa[["choppering"]]-1)]) {stop("Mowing is not allowed after choppering if status quo ante is not reached.")}
