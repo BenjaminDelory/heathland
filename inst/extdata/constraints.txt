@@ -1,6 +1,6 @@
 	none	grazing	mowing	burning	choppering
 none	1	1	1	1	1
 grazing	1	1	1	1	1
-mowing	1	5	5	5	8
-burning	1	5	5	5	8
-choppering	1	10	10	10	20
+mowing	1	5	7	10	10
+burning	1	5	7	10	10
+choppering	1	10	10	10	50

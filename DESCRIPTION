@@ -2,7 +2,7 @@ Package: heathland
 Type: Package
 Title: Analysis of Heathland Management Trade-offs
 Version: 1.0
-Date: 2019-01-09
+Date: 2019-01-15
 Author: Benjamin M Delory, David Walmsley, Werner Haerdtle 
 Maintainer: Benjamin M Delory <Benjamin.Delory@leuphana.de>
 Description: Analysing trade-offs associated with the management of a dry atlantic heath.
