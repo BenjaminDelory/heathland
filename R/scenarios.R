@@ -163,7 +163,7 @@ scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning"),
     }
     
     #Filter the new scenarios to remove those that do not meet the constraints
-    newscenarios<-filter(newscenarios)
+    newscenarios<-filter(newscenarios, constraints1 = constraints)
 
     #Fill big matrix
     scenarios1<-big.matrix(nrow=l+nrow(newscenarios), ncol=n, type="char", shared=TRUE)

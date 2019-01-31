@@ -69,7 +69,7 @@ create.scenario<-function(x, constraints){
 
 #Functions to filter scenarios in a matrix
 
-filtertest<-function(x, constraints1=constraints){
+filtertest<-function(x, constraints1){
   
   #x is a line of matrix of new scenarios
   
@@ -114,12 +114,12 @@ filtertest<-function(x, constraints1=constraints){
 
 #########
 
-filter<-function(x){
+filter<-function(x, constraints1=constraints){
   
   #x is a matrix of new scenarios
   
   #Find lines with problemetic scenarios
-  test<-apply(x, 1, filtertest)
+  test<-apply(x, 1, filtertest, constraints1=constraints1)
   
   #Remove lines
   if (1 %in% test) {x<-x[-which(test==1),]}
