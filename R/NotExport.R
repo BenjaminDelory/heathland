@@ -66,3 +66,67 @@ create.scenario<-function(x, constraints){
       if (identical(as.vector(x), freq_sc(scenario))==FALSE){scenario<-rep(NA, sum(x))}
   
   return(scenario)}
+
+#Functions to filter scenarios in a matrix
+
+filtertest<-function(x, constraints1=constraints){
+  
+  #x is a line of matrix of new scenarios
+  
+  index.mowing<-which(x==2)
+  index.burning<-which(x==3)
+  
+  result<-0
+  
+  #Test 2-2
+  
+  if (length(index.mowing)>1 & result==0){
+    diff1<-diff(index.mowing)
+    if (sum(diff1<constraints1["mowing", "mowing"])>0){result<-1}}
+  
+  #Test 3-3
+  
+  if (length(index.burning)>1 & result==0){
+    diff1<-diff(index.burning)
+    if (sum(diff1<constraints1["burning", "burning"])>0){result<-1}}
+  
+  #Test 2-3
+  
+  if (length(index.mowing)>0 & length(index.burning)>0 & result==0){
+    for (j in 1:length(index.mowing)){
+      diff1<-index.burning-index.mowing[j]
+      diff1<-diff1[diff1>=0]
+      if (sum(diff1<constraints1["mowing", "burning"])>0){
+        result<-1
+        break}}}
+  
+  #Test 3-2
+  
+  if (length(index.mowing)>0 & length(index.burning)>0 & result==0){
+    for (j in 1:length(index.burning)){
+      diff1<-index.mowing-index.burning[j]
+      diff1<-diff1[diff1>=0]
+      if (sum(diff1<constraints1["burning", "mowing"])>0){
+        result<-1
+        break}}}
+  
+  return(result)}
+
+#########
+
+filter<-function(x){
+  
+  #x is a matrix of new scenarios
+  
+  #Find lines with problemetic scenarios
+  test<-apply(x, 1, filtertest)
+  
+  #Remove lines
+  if (1 %in% test) {x<-x[-which(test==1),]}
+  
+  return(x)}
+
+
+
+
+

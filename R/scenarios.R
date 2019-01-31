@@ -103,11 +103,6 @@ scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning"),
     
     else{
     
-    scenarios1<-big.matrix(nrow=l+lengthindex*m, ncol=n, type="char", shared=TRUE)
-    scenarios1[1:l,1:n]<-scenarios[1:l,1:n]
-    scenarios<-scenarios1
-    remove(scenarios1)
-    
     newscenarios<-matrix(nrow=lengthindex*m, ncol=n)
     newl<-0
      
@@ -166,6 +161,15 @@ scenarios<-cmpfun(function(management=c("none", "grazing", "mowing", "burning"),
         newl<-newl+m}
       
     }
+    
+    #Filter the new scenarios to remove those that do not meet the constraints
+    newscenarios<-filter(newscenarios)
+
+    #Fill big matrix
+    scenarios1<-big.matrix(nrow=l+nrow(newscenarios), ncol=n, type="char", shared=TRUE)
+    scenarios1[1:l,1:n]<-scenarios[1:l,1:n]
+    scenarios<-scenarios1
+    remove(scenarios1)
     
     scenarios[(l+1):(l+nrow(newscenarios)), 1:n]<-newscenarios
     l<-l+nrow(newscenarios)
